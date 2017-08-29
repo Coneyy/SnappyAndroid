@@ -28,19 +28,19 @@ import coneyy.com.github.snappyandroid.util.Log;
 import coneyy.com.github.snappyandroid.util.SQLiteUtils;
 
 public final class From implements Sqlable {
-    private Sqlable mQueryBase;
+    Sqlable mQueryBase;
 
-    private Class<? extends Model> mType;
-    private String mAlias;
-    private List<Join> mJoins;
-    private final StringBuilder mWhere = new StringBuilder();
-    private String mGroupBy;
-    private String mHaving;
-    private String mOrderBy;
-    private String mLimit;
-    private String mOffset;
+    Class<? extends Model> mType;
+    String mAlias;
+    List<Join> mJoins;
+    final StringBuilder mWhere = new StringBuilder();
+    String mGroupBy;
+    String mHaving;
+    String mOrderBy;
+    String mLimit;
+    String mOffset;
 
-    private List<Object> mArguments;
+    List<Object> mArguments;
 
     public From(Class<? extends Model> table, Sqlable queryBase) {
         mType = table;
@@ -95,11 +95,27 @@ public final class From implements Sqlable {
         return this;
     }
 
+    public From appendClause(String clause) {
+        mWhere.append(clause);
+        return this;
+    }
+
+    public Where where() {
+        return new Where(this);
+    }
+
+    public Where and() {
+        return new Where(this, " AND ");
+    }
+
+    public Where or() {
+        return new Where(this, " OR ");
+    }
+
     public From where(String clause, Object... args) {
         where(clause).addArguments(args);
         return this;
     }
-
 
     public From and(String clause) {
         return where(clause);
@@ -121,6 +137,7 @@ public final class From implements Sqlable {
         or(clause).addArguments(args);
         return this;
     }
+
 
     public From groupBy(String groupBy) {
         mGroupBy = groupBy;
